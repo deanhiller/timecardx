@@ -6,10 +6,14 @@
 GET     /                                         Application.index
 GET		/signin                                   Application.signin
 GET     /signup                                   Application.signup
-GET     /contact                                 Application.contact
+GET     /contact                                  Application.contact
 GET     /about                                    Application.about
 GET     /blog                                     Application.blog
 GET     /pricing                                  Application.pricing
+
+GET     /company                                OtherStuff.company
+GET     /addcompany                             OtherStuff.addCompany
+GET     /companydetails                         OtherStuff.companyDetails
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

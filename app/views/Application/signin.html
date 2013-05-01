@@ -30,11 +30,13 @@
                 </div>
 
                 <div class="span12 footer">
-                    <form>
-                        <input type="text" placeholder="Email">
-                        <input type="password" placeholder="Password">
-                        <input type="submit" placeholder="Confirm Password" value="sign in">
-                    </form>
+                    #{form @auth.Secure.authenticate()}
+	                <div>
+	                  <input type="text" placeholder="Email" name="username" value="">
+	                  <input type="password" placeholder="Password" name="password" value="">
+	                  <input type="submit" value="sign in">	                  
+	                </div>
+	               #{/form}
                 </div>
 
                 <div class="span12 proof">
@@ -42,19 +44,19 @@
                         <label class="checkbox">
                             <input type="checkbox"> Remember me
                         </label>
-                        <a href="reset.html">Forgot password?</a>
+                        <a href="#">Forgot password?</a>
                     </div>
 
                     <div class="span3 dosnt">
-                        <span>Don’t have an account?</span>
-                        <a href="sign-up.html">Sign up</a>
+                        <span>Don't have an account?</span>
+                        <a href="/signup">Sign up</a>
                     </div>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- Sign In Option 2 -->
+<!--     Sign In Option 2
     <div id="sign_in2">
         <div class="container">
             <div class="section_header">
@@ -119,4 +121,4 @@
                 </div>
             </div>
         </div>
-    </div>  
+    </div>   -->

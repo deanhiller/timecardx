@@ -8,12 +8,14 @@ import com.alvazan.orm.api.base.anno.NoSqlId;
 import com.alvazan.orm.api.base.anno.NoSqlIndexed;
 import com.alvazan.orm.api.base.anno.NoSqlManyToOne;
 import com.alvazan.orm.api.base.anno.NoSqlOneToMany;
+import com.alvazan.orm.api.base.anno.NoSqlOneToOne;
 import com.alvazan.orm.api.base.anno.NoSqlPartitionByThisField;
-
+@NoSqlEntity
 public class UserDbo {
 
 	@NoSqlId
 	private String id;
+
 	private String email;
 
 	private String password;
@@ -28,10 +30,13 @@ public class UserDbo {
 	@NoSqlManyToOne
 	private CompanyDbo company;
 
+	@NoSqlOneToOne
 	private UserDbo manager;
-
+	
+	@NoSqlOneToMany
 	private List<UserDbo> employees;
 
+	@NoSqlOneToMany
 	private List<TimeCardDbo> timecards;
 
 	public String getId() {

@@ -2,21 +2,24 @@
 <html>
     <head>
         <title>#{get 'title' /}</title>
-        <meta charset="${_response_encoding}">
+        <meta charset="utf-8">
 		<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
 	    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 	
     <!-- Styles -->
-    <link href="/public/css/bootstrap.css" rel="stylesheet">
-    <link rel="stylesheet" type="text/css" href="/public/css/theme.css">
+    <link rel="stylesheet" href="/public/css/bootstrap.css"  />
+    <link rel="stylesheet" href="/public/css/theme.css" type="text/css" />
     <link rel="stylesheet" href="/public/css/index.css" type="text/css" media="screen" />
-
-    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css'>
-    <link rel="stylesheet" type="text/css" href="/public/css/lib/animate.css" media="screen, projection">  
+    <link rel="stylesheet" href="/public/css/lib/animate.css" type="text/css" media="screen, projection">
+    <link rel="stylesheet" href="/public/css/about.css" type="text/css" media="screen" />
 	<link rel="stylesheet" href="/public/css/sign-in.css" type="text/css" media="screen" />
 	<link rel="stylesheet" href="/public/css/sign-up.css" type="text/css" media="screen" />
- 
-        <script src="@{'/public/javascripts/jquery-1.6.4.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
+	<link rel="stylesheet" href="/public/css/lib/flexslider.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="/public/css/contact.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="/public/css/blog.css" type="text/css" media="screen" />
+	<link rel="stylesheet" href="/public/css/blogpost.css" type="text/css" media="screen" />
+    <link href='http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic' rel='stylesheet' type='text/css'>
+     <script src="@{'/public/javascripts/jquery-1.6.4.min.js'}" type="text/javascript" charset="${_response_encoding}"></script>
     </head>
 <body>
     <div class="navbar transparent navbar-inverse navbar-fixed-top">
@@ -54,18 +57,46 @@
                     <li><a href="/pricing">PRICING</a></li>
                     <li><a href="/contact">CONTACT US</a></li>
                     <li><a href="/blog">BLOG</a></li>
-                    <li><a class="btn-header" href="/signup">Sign up</a></li>
-                    <li><a class="btn-header" href="/signin">Sign in</a></li>
+                    #{if session.get('username')}
+                        <li><div class="slogan">logged in as: ${session.get('username')}</div>
+                        	<a href="@{auth.Secure.logout()}" class="btn btn-primary signup">Logout</a>
+                        </li>
+            		#{/if}
+            		#{else}
+                    	<li><a class="btn-header" href="/signup">Sign up</a></li>
+                    	<li><a class="btn-header" href="/signin">Sign in</a></li>
+                    #{/else}	
                 </ul>
             </div>
         </div>
       </div>
     </div>
-	
-        #{doLayout /}
-    
-	
-<!-- starts footer -->
+
+	#{ifErrors}
+	<div class="container">
+		<div class="row-fluid">
+			<div class="offset3 span6 alert alert-error">
+				<h4>Oops....</h4>
+				<ul>
+					#{errors}
+					<li>${error}</li> #{/errors}
+				</ul>
+			</div>
+		</div>
+	</div>
+	#{/ifErrors} #{if flash.error}
+	<div class="container">
+		<div class="row-fluid">
+			<div class="offset3 span6 alert alert-error">
+				<h4>Oops....</h4>
+				${flash.error}
+			</div>
+		</div>
+	</div>
+	#{/} #{doLayout /}
+
+
+	<!-- starts footer -->
     <footer id="footer">
         <div class="container">
             <div class="row sections">

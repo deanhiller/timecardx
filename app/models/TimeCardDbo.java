@@ -27,7 +27,7 @@ public class TimeCardDbo {
 
 	private int numberOfHours;
 
-	private Status status;
+	//private Status status;
 	
 	public String getId() {
 		return id;
@@ -59,11 +59,11 @@ public class TimeCardDbo {
 		this.numberOfHours = numberOfHours;
 	}
 
-	public Status getStatus() {
+/*	public Status getStatus() {
 		return status;
 	}
 
 	public void setStatus(Status status) {
 		this.status = status;
-	}
+	}*/
 }

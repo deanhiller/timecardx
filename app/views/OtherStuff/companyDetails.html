@@ -1,0 +1,27 @@
+#{extends './userTemplate.html' /}
+
+<div class="container">
+	<h2></h2>
+</div>
+
+
+<table class="table">
+	<thead>
+		<tr>
+			<th>User Name</th>
+			<th>Email Id</th>
+			<th>Some Other information</th>
+		</tr>
+	</thead>
+	<tbody>
+		#{list users, as:'companyuser'}
+		<tr>
+			<td>companyuser.name</td>
+			<td>TBD</td>
+			<td>To be use later</td>
+		</tr>
+		#{/list}
+	</tbody>
+</table>
+
+<a href="/adduser"><span style="color: blue;">Add a new user</span></a>
