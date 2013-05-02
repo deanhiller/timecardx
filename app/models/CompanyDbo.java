@@ -50,7 +50,7 @@ public class CompanyDbo {
 		this.users = users;
 	}
 
-	protected void addUser(UserDbo userDbo) {
+	public void addUser(UserDbo userDbo) {
 		this.users.add(userDbo);
 	}
 

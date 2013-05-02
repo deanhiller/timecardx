@@ -4,35 +4,35 @@
 <h2></h2>
 </div>
 
-
-	<table class="table">
-		<thead>
-		    <tr>
-	            <th>Company Name</th> 
-	            <th>Something</th>
-	            <th>Some Other information</th>
-		    </tr>
-		</thead>
-		<tbody>
-		        <tr>
-		          <td>
-		            #{if company == null}
+    #{if company == null}
        					<a href="/addcompany"><span style="color: blue;">Register a new Company</span></a>
-      				#{/if}
-      				#{else}
-        				<a href="/companydetails"><span style="color: blue;">${company.name}</span></a>
-      				#{/else}
-		          </td>
-		          <td>
-		            	TBD
-		          </td>
-		          <td>
-						To be use later
-		          </td>
-		        </tr>
-		</tbody>
-	</table>
-
+    #{/if}
+				
+    #{else}
+		<table class="table">
+			<thead>
+			    <tr>
+		            <th>Company Name</th> 
+		            <th>Address</th>
+		            <th>Detail</th>
+			    </tr>
+			</thead>
+			<tbody>
+	       		<tr>
+	          		  <td>
+	       				<a href="/companydetails"><span style="color: blue;">${company.name}</span></a>
+	      		      </td>
+			          <td>
+	            		${company.address}
+			          </td>
+			          <td>
+						${company.description}
+			          </td>
+		        </tr> 
+			</tbody>
+		</table>
+	#{/else}
+	
 
 
 

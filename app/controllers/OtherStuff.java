@@ -50,8 +50,10 @@ public class OtherStuff extends Controller {
 	public static void companyDetails() {
 		UserDbo user = Utility.fetchUser();
 		CompanyDbo company = user.getCompany();
-		log.info("User = " + user +" and Company = " + company);
-		List<UserDbo> users = company.getUsers();
+		log.info("User = " + user.getEmail() +" and Company = " + company);
+		List<UserDbo> users = null;
+		if (company != null)
+			users = company.getUsers();
 		render(user, company, users);
 	}
 
@@ -69,6 +71,7 @@ public class OtherStuff extends Controller {
 		company.setAddress(address);
 		company.setPhoneNumber(phone);
 		company.setDescription(detail);
+		company.addUser(user);
 		
 		user.setCompany(company);
 		
@@ -77,6 +80,64 @@ public class OtherStuff extends Controller {
 		
 		NoSql.em().flush();
 		company();
+	}
+
+	public static void addUser() {
+		UserDbo admin = Utility.fetchUser();
+		CompanyDbo company = admin.getCompany();
+		log.info("Adding users by Admin = " + admin.getEmail()
+				+ " and Company = " + company.getName());
+		List<UserDbo> users = company.getUsers();
+
+		render(admin, company, users);
+	}
+
+	public static void postUserAddition(String useremail, String manager) throws Throwable {
+		validation.required(useremail);
+
+		if (!useremail.contains("@"))
+			validation.addError("email", "This is not a valid email");
+
+		EmailToUserDbo existing = NoSql.em().find(EmailToUserDbo.class,
+				useremail);
+		if (existing != null) {
+			validation.addError("email", "This email already exists");
+		}
+
+		if (validation.hasErrors()) {
+			params.flash(); // add http parameters to the flash scope
+			validation.keep(); // keep the errors for the next request
+			addUser();
+		}
+		UserDbo admin = Utility.fetchUser();
+		CompanyDbo company = admin.getCompany();
+
+		UserDbo user = new UserDbo();
+		user.setEmail(useremail);
+		user.setCompany(company);
+		if (manager == null) {
+			// If there is no manager, add the current user as Manager
+			user.setManager(admin);
+		} else {
+			EmailToUserDbo ref = NoSql.em().find(EmailToUserDbo.class, manager);
+			UserDbo adminDbo = NoSql.em().find(UserDbo.class, ref.getValue());
+			user.setManager(adminDbo);
+		}
+
+		NoSql.em().put(user);
+
+		EmailToUserDbo emailToUser = new EmailToUserDbo();
+		emailToUser.setId(useremail);
+		emailToUser.setValue(user.getId());
+		NoSql.em().put(emailToUser);
+
+		company.addUser(user);
+		NoSql.em().put(company);
+
+		NoSql.em().flush();
+
+		// Utility.sendEmail(useremail, company.getName());
+		companyDetails();
 	}
 
 	public static void success() {
