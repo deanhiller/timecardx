@@ -83,9 +83,8 @@ public class Register extends Controller {
 			validation.keep(); // keep the errors for the next request
 			userRegister();
 		}
-
 		UserDbo user = NoSql.em().find(UserDbo.class, existing.getValue());
-		user.setEmail(email);
+		//user.setEmail(email);
 		user.setPassword(password);
 		user.setFirstName(firstName);
 		user.setLastName(lastName);
@@ -93,10 +92,13 @@ public class Register extends Controller {
 		user.setAdmin(false);
 		NoSql.em().put(user);
 
+		EmailToUserDbo ref = NoSql.em().find(EmailToUserDbo.class, user.getManager().getEmail());
+		UserDbo manager = NoSql.em().find(UserDbo.class, ref.getValue());
+		manager.addEmployee(user);
+		NoSql.em().put(manager);
+
 		NoSql.em().flush();
-
 		Secure.addUserToSession(user.getEmail());
-
 		OtherStuff.employee();
 	}
 }

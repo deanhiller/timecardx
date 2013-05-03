@@ -151,15 +151,29 @@ public class OtherStuff extends Controller {
 
 		NoSql.em().flush();
 
-		// Utility.sendEmail(useremail, company.getName());
+		Utility.sendEmail(useremail, company.getName());
 		companyDetails();
 	}
 
 	public static void employee() {
 		UserDbo employee = Utility.fetchUser();
-		List<TimeCardDbo> timeCards = employee.getTimecards();
-		System.out.println("timeCards size " + timeCards.size());
-		render(timeCards);
+		List<UserDbo> employees = employee.getEmployees();
+		if (employees != null && employees.size() == 0) {
+			// Employee is either only employee or a manager with no employee under him
+			// so render his timecards only
+			List<TimeCardDbo> timeCards = employee.getTimecards();
+			render(timeCards);
+		} else {
+			manager();
+		}
+	}
+
+	public static void manager() {
+		//Manager can have his own timecards to submit to admin
+		UserDbo manager = Utility.fetchUser();
+		List<UserDbo> employees = manager.getEmployees();
+		List<TimeCardDbo> timeCards = manager.getTimecards();
+		render(employees, timeCards);
 	}
 
 	public static void addTime() {
@@ -197,8 +211,15 @@ public class OtherStuff extends Controller {
 
 		NoSql.em().flush();
 
-		// Utility.sendEmailForApproval(manager.getEmail(), company.getName(), user.getEmail());
+		Utility.sendEmailForApproval(manager.getEmail(), company.getName(), user.getEmail());
 		employee();
+	}
+
+	public static void userCards(String email) {
+		EmailToUserDbo ref = NoSql.em().find(EmailToUserDbo.class, email);
+		UserDbo user = NoSql.em().find(UserDbo.class, ref.getValue());
+		List<TimeCardDbo> timeCards = user.getTimecards();
+		render(email, timeCards);
 	}
 
 	public static void success() {

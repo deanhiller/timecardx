@@ -113,6 +113,10 @@ public class UserDbo {
 		this.employees = employees;
 	}
 
+	public void addEmployee(UserDbo employee) {
+		this.employees.add(employee);
+	}
+
 	public List<TimeCardDbo> getTimecards() {
 		return timecards;
 	}

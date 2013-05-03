@@ -18,6 +18,8 @@ GET     /adduser                         		OtherStuff.addUser
 GET     /dashboard								OtherStuff.dashboard
 GET     /addtime								OtherStuff.addTime
 GET     /userdashboard							OtherStuff.employee
+GET     /managerdashboard						OtherStuff.manager
+GET     /usercards								OtherStuff.userCards
 
 GET     /usersignup                        		Register.userRegister
 
