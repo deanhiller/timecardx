@@ -1,0 +1,41 @@
+#{extends './userTemplate.html' /}
+
+<div class="container">
+<h2></h2>
+</div>
+
+    #{ifnot timeCards}
+       	<a href="/addtime"><span style="color: blue;">Add a new Time Card</span></a>
+    #{/ifnot}
+    #{else}
+		<table class="table">
+			<thead>
+			    <tr>
+		            <th>Week</th> 
+		            <th>No. of Hours</th>
+		            <th>Remark</th>
+			    </tr>
+			</thead>
+			<tbody>
+				#{list timeCards, as:'timeCard'}
+	       		  <tr>
+	          		  <td>
+	       				${timeCard.beginOfWeek}
+	      		      </td>
+			          <td>
+	            		${timeCard.numberOfHours}
+			          </td>
+			          <td>
+						${timeCard.detail}
+			          </td>
+		          </tr>
+		        #{/list} 
+			</tbody>
+		</table>
+		</br>
+		<a href="/addtime"><span style="color: blue;">Add a new Time Card</span></a>
+	#{/else}
+	
+
+
+

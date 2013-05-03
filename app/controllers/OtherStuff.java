@@ -9,12 +9,15 @@ import java.util.List;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
 import org.joda.time.LocalDateTime;
+import org.joda.time.format.DateTimeFormat;
+import org.joda.time.format.DateTimeFormatter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import com.alvazan.play.NoSql;
 
 import models.EmailToUserDbo;
+import models.Status;
 import models.UserDbo;
 import models.TimeCardDbo;
 import models.CompanyDbo;
@@ -37,6 +40,10 @@ public class OtherStuff extends Controller {
 
 	public static void company() {
 		UserDbo user = Utility.fetchUser();
+		if(user!=null && !user.isAdmin()) {
+			validation.addError("Access", "Oops, you do not have access to this page");
+			dashboard();
+		}
 		CompanyDbo company = user.getCompany();
 		log.info("User = " + user +" and Company = " + company); 
 		render(user, company);
@@ -82,6 +89,14 @@ public class OtherStuff extends Controller {
 		company();
 	}
 
+	public static void dashboard() {
+		UserDbo user = Utility.fetchUser();
+		if (user!=null && user.isAdmin())
+			company();
+		else
+			employee();
+	}
+	
 	public static void addUser() {
 		UserDbo admin = Utility.fetchUser();
 		CompanyDbo company = admin.getCompany();
@@ -92,16 +107,17 @@ public class OtherStuff extends Controller {
 		render(admin, company, users);
 	}
 
-	public static void postUserAddition(String useremail, String manager) throws Throwable {
+	public static void postUserAddition(String useremail, String manager)
+			throws Throwable {
 		validation.required(useremail);
 
 		if (!useremail.contains("@"))
-			validation.addError("email", "This is not a valid email");
+			validation.addError("useremail", "This is not a valid email");
 
 		EmailToUserDbo existing = NoSql.em().find(EmailToUserDbo.class,
 				useremail);
 		if (existing != null) {
-			validation.addError("email", "This email already exists");
+			validation.addError("useremail", "This email already exists");
 		}
 
 		if (validation.hasErrors()) {
@@ -138,6 +154,52 @@ public class OtherStuff extends Controller {
 
 		// Utility.sendEmail(useremail, company.getName());
 		companyDetails();
+	}
+
+	public static void employee() {
+		UserDbo employee = Utility.fetchUser();
+		List<TimeCardDbo> timeCards = employee.getTimecards();
+		System.out.println("timeCards size " + timeCards.size());
+		render(timeCards);
+	}
+
+	public static void addTime() {
+		UserDbo employee = Utility.fetchUser();
+		DateTime beginOfWeek = Utility.calculateBeginningOfTheWeek();
+		DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM dd");
+		String currentWeek = fmt.print(beginOfWeek);
+
+		render(currentWeek, employee);
+	}
+
+	public static void postTimeAddition(int totaltime, String detail)
+			throws Throwable {
+		validation.required(totaltime);
+
+		if (validation.hasErrors()) {
+			params.flash(); // add http parameters to the flash scope
+			validation.keep(); // keep the errors for the next request
+			addTime();
+		}
+
+		UserDbo user = Utility.fetchUser();
+		CompanyDbo company = user.getCompany();
+		UserDbo manager = user.getManager();
+
+		TimeCardDbo timeCardDbo = new TimeCardDbo();
+		timeCardDbo.setBeginOfWeek(Utility.calculateBeginningOfTheWeek());
+		timeCardDbo.setNumberOfHours(totaltime);
+		timeCardDbo.setDetail(detail);
+		timeCardDbo.setApproved(false);
+
+		user.addTimecards(timeCardDbo);
+		NoSql.em().put(timeCardDbo);
+		NoSql.em().put(user);
+
+		NoSql.em().flush();
+
+		// Utility.sendEmailForApproval(manager.getEmail(), company.getName(), user.getEmail());
+		employee();
 	}
 
 	public static void success() {

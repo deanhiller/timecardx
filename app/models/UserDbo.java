@@ -25,6 +25,8 @@ public class UserDbo {
 	private String lastName;
 
 	private String phone;
+	
+	private boolean isAdmin;
 
 	@NoSqlPartitionByThisField
 	@NoSqlManyToOne
@@ -34,10 +36,10 @@ public class UserDbo {
 	private UserDbo manager;
 	
 	@NoSqlOneToMany
-	private List<UserDbo> employees;
+	private List<UserDbo> employees = new ArrayList<UserDbo>();;
 
 	@NoSqlOneToMany
-	private List<TimeCardDbo> timecards;
+	private List<TimeCardDbo> timecards = new ArrayList<TimeCardDbo>();
 
 	public String getId() {
 		return id;
@@ -117,5 +119,17 @@ public class UserDbo {
 
 	public void setTimecards(List<TimeCardDbo> timecards) {
 		this.timecards = timecards;
+	}
+
+	public void addTimecards(TimeCardDbo timecard) {
+		this.timecards.add(timecard);
+	}
+
+	public boolean isAdmin() {
+		return isAdmin;
+	}
+
+	public void setAdmin(boolean isAdmin) {
+		this.isAdmin = isAdmin;
 	}
 }

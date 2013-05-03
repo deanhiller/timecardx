@@ -41,7 +41,7 @@
             		#{/if}		  
 						  <!-- Dropdown Menu -->
 			              <ul class="dropdown-menu">
-			                <li><a href="/company">Company</a></li>
+			                <li><a href="/dashboard">Dashboard</a></li>
 <!-- 			                <li><a href="/companydetails">Users</a></li> -->
 			              </ul>
 			        </li>
@@ -68,13 +68,20 @@
                     <li><a href="/contact">CONTACT US</a></li>
                     <li><a href="/blog">BLOG</a></li>
                     #{if session.get('username')}
-                        <li><div class="slogan">logged in as: ${session.get('username')}</div>
-                        	<a href="@{auth.Secure.logout()}" class="btn btn-primary signup">Logout</a>
+                        <li><div>logged in as: ${session.get('username')}</div>
+                        	<a href="@{auth.Secure.logout()}" class="btn btn-primary btn-small">Logout</a>
                         </li>
             		#{/if}
             		#{else}
-                    	<li><a class="btn-header" href="/signup">Sign up</a></li>
-                    	<li><a class="btn-header" href="/signin">Sign in</a></li>
+<!--                     	<li><a class="btn-header" href="/signup">Sign up</a></li> -->        	
+          		    <li class="dropdown"><a href="/company" class="dropdown-toggle" id="pages-drop" data-toggle="dropdown">Sign up</a> 
+						  <!-- Dropdown Menu -->
+			              <ul class="dropdown-menu">
+			                <li><a href="/signup">For a new company</a></li>
+ 			                <li><a href="/usersignup">As an employee</a></li>
+			              </ul>
+			        </li>       
+                    <li><a class="btn-header" href="/signin">Sign in</a></li>
                     #{/else}	
                 </ul>
             </div>

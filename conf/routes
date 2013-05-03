@@ -11,13 +11,16 @@ GET     /about                                    Application.about
 GET     /blog                                     Application.blog
 GET     /pricing                                  Application.pricing
 
-GET     /company                                OtherStuff.company
+GET     /admindashboard                         OtherStuff.company
 GET     /addcompany                             OtherStuff.addCompany
 GET     /companydetails                         OtherStuff.companyDetails
 GET     /adduser                         		OtherStuff.addUser
-
+GET     /dashboard								OtherStuff.dashboard
+GET     /addtime								OtherStuff.addTime
+GET     /userdashboard							OtherStuff.employee
 
 GET     /usersignup                        		Register.userRegister
+
 
 # Ignore favicon requests
 GET     /favicon.ico                            404

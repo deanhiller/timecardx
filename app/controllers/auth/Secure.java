@@ -117,7 +117,7 @@ public class Secure extends Controller {
             response.setCookie("rememberme", Crypto.sign(username + "-" + expiration.getTime()) + "-" + username + "-" + expiration.getTime(), duration);
         }
         
-        OtherStuff.company();
+        OtherStuff.dashboard();
     }
 
     @Util

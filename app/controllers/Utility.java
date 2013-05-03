@@ -2,6 +2,8 @@ package controllers;
 
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
+import org.joda.time.DateTime;
+import org.joda.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +35,7 @@ public class Utility {
 			email.setFrom("no-reply@tbd.com");
 			email.addTo(emailId);
 			email.setSubject("You are registered for " + company);
-			email.setMsg(" Hi,\n You have been added on tbd.com for "+ company + 
+			email.setMsg(" Hi,\n You have been added on www.tbd.com for "+ company + 
 					" to submit your time cards. \n Please go to www.tbd.com and complete the registration. \n Best Regards");
 
 			Mail.send(email); 
@@ -59,4 +61,31 @@ public class Utility {
 		*/
 		
 	}
+
+	public static void sendEmailForApproval(String emailId, String company, String employee) {
+		SimpleEmail email = new SimpleEmail();
+		try {
+			email.setFrom("no-reply@tbd.com");
+			email.addTo(emailId);
+			email.setSubject("New time card submitted");
+			email.setMsg("The user " + employee + " who is registerdd for " + company + 
+					" has submitted his time card.\n Please log on to www.tbd.com and approve/reject the same. \n Best Regards");
+
+			Mail.send(email); 
+		} catch (EmailException e) {
+			log.error("ERROR in sending mail to " + emailId);
+			e.printStackTrace();
+		}
+	}
+
+	public static DateTime calculateBeginningOfTheWeek() {
+		DateTime time = DateTime.now();
+		DateTime beginOfWeek = time.dayOfWeek().withMinimumValue();
+/*		DateTime beginOfMonth = time.dayOfMonth().withMinimumValue();
+		Duration duration = new Duration(time, endOfMonth);
+		Duration monthDuration = new Duration(beginOfMonth, endOfMonth);*/
+		
+		return beginOfWeek;
+	}
+	
 }

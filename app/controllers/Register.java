@@ -41,7 +41,9 @@ public class Register extends Controller {
 		UserDbo user = new UserDbo();
 		user.setEmail(email);
 		user.setPassword(password);
+		// Add self as manager for company Admin
 		user.setManager(user);
+		user.setAdmin(true);
 		NoSql.em().put(user);
 
 		EmailToUserDbo emailToUser = new EmailToUserDbo();
@@ -56,11 +58,45 @@ public class Register extends Controller {
 		OtherStuff.company();
 	}
 
-	public static void userRegister(String email) {
-		render(email);
+	public static void userRegister() {
+		render();
 	}
 
-	public static void postUserRegister(String email) {
-		render(email);
+	public static void postUserRegister(String email, String password, String verifyPassword, String firstName, String lastName, String phone) {
+		validation.required(email);
+		if (password == null) {
+			validation.addError("password", "Password must be supplied");
+		}
+		if (!password.equals(verifyPassword)) {
+			validation.addError("verifyPassword", "Passwords did not match");
+		}
+		if (!email.contains("@"))
+			validation.addError("email", "This is not a valid email");
+
+		EmailToUserDbo existing = NoSql.em().find(EmailToUserDbo.class, email);
+		if (existing == null) {
+			validation.addError("email", "This email is not registered with us");
+		}
+
+		if (validation.hasErrors()) {
+			params.flash(); // add http parameters to the flash scope
+			validation.keep(); // keep the errors for the next request
+			userRegister();
+		}
+
+		UserDbo user = NoSql.em().find(UserDbo.class, existing.getValue());
+		user.setEmail(email);
+		user.setPassword(password);
+		user.setFirstName(firstName);
+		user.setLastName(lastName);
+		user.setPhone(phone);
+		user.setAdmin(false);
+		NoSql.em().put(user);
+
+		NoSql.em().flush();
+
+		Secure.addUserToSession(user.getEmail());
+
+		OtherStuff.employee();
 	}
 }

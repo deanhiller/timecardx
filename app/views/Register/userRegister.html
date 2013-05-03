@@ -30,16 +30,19 @@
                         <div class="box_cont">
                                <div class="division">
                                 <div class="line l"></div>
-                                <span>Company</span>
+                                <span>Sign Up</span>
                                 <div class="line r"></div>
                             </div>
                             <div class="form">
+                            
 				    			#{form @Register.postUserRegister()}
-				                 		<input type="text" placeholder="Company Name" name="name" value=""/>
-				                 		<input type="text" placeholder="Address" name="address" value=""/>
+				    					<input type="text" placeholder="Email" name="email" value = "" />
+                        				<input type="password" placeholder="Password" name="password" value = "" />
+                        				<input type="password" placeholder="Confirm Password" name= "verifyPassword" value="" />
+				                 		<input type="text" placeholder="First Name" name="firstname" value=""/>
+				                 		<input type="text" placeholder="Last Name" name="lastname" value=""/>
 				                 		<input type="text" placeholder="Phone" name="phone" value=""/>
-				                 		<input type="text" placeholder="Detail" name="detail" value=""/>
-				                        <input type="submit" value="Add Company"/>
+				                        <input type="submit" value="Sign Up"/>
 				                #{/form}
                             </div>
 

@@ -20,15 +20,19 @@ public class TimeCardDbo {
 	private static DateTimeFormatter fmt = DateTimeFormat
 			.forPattern("MMM dd, yyyy");
 
-	@NoSqlId(usegenerator = false)
+	@NoSqlId
 	private String id;
 
 	private DateTime beginOfWeek;
 
 	private int numberOfHours;
-
-	//private Status status;
 	
+	private String detail;
+	
+	private boolean approved;
+
+//	private Status status;	
+
 	public String getId() {
 		return id;
 	}
@@ -59,7 +63,23 @@ public class TimeCardDbo {
 		this.numberOfHours = numberOfHours;
 	}
 
-/*	public Status getStatus() {
+	public String getDetail() {
+		return detail;
+	}
+
+	public void setDetail(String detail) {
+		this.detail = detail;
+	}
+
+	public boolean isApproved() {
+		return approved;
+	}
+
+	public void setApproved(boolean approved) {
+		this.approved = approved;
+	}
+
+	/*	public Status getStatus() {
 		return status;
 	}
 
