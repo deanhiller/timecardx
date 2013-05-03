@@ -17,7 +17,6 @@ import org.slf4j.LoggerFactory;
 import com.alvazan.play.NoSql;
 
 import models.EmailToUserDbo;
-import models.Status;
 import models.UserDbo;
 import models.TimeCardDbo;
 import models.CompanyDbo;
