@@ -52,10 +52,10 @@
 					                 				<td class="span1">${dayCard.date}
 					                 				</td>
 					                 				<td class="span1">
-					                 				<input type="number" placeholder="Hours" name="${dayCard.numberOfHours}" value="${dayCard.numberOfHours}"/>	
+					                 				<input type="number" placeholder="Hours" name="noofhours[${dayCard_index-1}]" value=""/>	
 					                 				</td>
 					                 				<td class="span4">
-					                 				<input type="text" placeholder="Remark" name="${dayCard.detail}" value="${dayCard.detail}"/>
+					                 				<input type="text" placeholder="Remark" name="details[${dayCard_index-1}]" value=""/>
 					                 				</td>
 					                 			</tr>
 					                 		#{/list}

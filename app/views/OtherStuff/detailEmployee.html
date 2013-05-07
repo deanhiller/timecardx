@@ -1,0 +1,34 @@
+#{extends './userTemplate.html' /}
+<div class="container">
+<h2></h2>
+</div>
+ 
+		<table class="table">
+			<thead>
+			    <tr>
+		            <th>Week</th> 
+		            <th>No. of Hours</th>
+		            <th>Remark</th>
+			    </tr>
+			</thead>
+			<tbody>
+				#{list dayCardDbo, as:'cardDbo'}
+	       		  <tr>
+	          		  <td>
+	       				${cardDbo.date}
+	      		      </td>
+	      		    
+			          <td>
+	            		${cardDbo.numberOfHours}
+			          </td>
+			         
+			          <td>
+						${cardDbo.detail}
+			          </td>
+		          </tr>
+		        #{/list} 
+			</tbody>
+		</table>
+		</br>
+		
+	

@@ -165,9 +165,7 @@ public class OtherStuff extends Controller {
 		token.setEmail(useremail);
 		NoSql.em().put(token);
 		NoSql.em().flush();
-
 		Utility.sendEmail(useremail, company.getName(), key);
-
 		companyDetails();
 	}
 
@@ -177,11 +175,17 @@ public class OtherStuff extends Controller {
 		if (employees != null && employees.size() == 0) {
 			// Employee is either only employee or a manager with no employee under him
 			// so render his timecards only
+			LocalDate beginOfWeek = Utility.calculateBeginningOfTheWeek();
 			List<TimeCardDbo> timeCards = employee.getTimecards();
-			render(timeCards);
+			render(timeCards,beginOfWeek);
 		} else {
 			manager();
 		}
+	}
+	public static void detailEmployee(String id) {
+		TimeCardDbo ref = NoSql.em().find(TimeCardDbo.class, id);
+		List<DayCardDbo> dayCardDbo=ref.getDaycards();
+		render(dayCardDbo);
 	}
 
 	public static void manager() {
@@ -198,12 +202,19 @@ public class OtherStuff extends Controller {
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM dd");
 		String currentWeek = fmt.print(beginOfWeek);
 		DayCardDbo[] dayCards = new DayCardDbo[7];
+		int[] noofhours = new int[7];
+		String[] details = new String[7];
 		for (int i=0; i<7 ; i++) {
+			noofhours[i] = 0;
+			details[i]= "";
 			dayCards[i] = new DayCardDbo();
 			dayCards[i].setDate(beginOfWeek.plusDays(i));
+			dayCards[i].setNumberOfHours(i);
+			dayCards[i].setDetail("i");
 			NoSql.em().put(dayCards[i]);
+		    NoSql.em().flush();
 		}
-		render(currentWeek, employee,beginOfWeek, dayCards);
+		render(currentWeek, employee,beginOfWeek, dayCards, noofhours, details);
 	}
 
 	public static void postTimeAddition(int totaltime, String detail)
@@ -236,32 +247,51 @@ public class OtherStuff extends Controller {
 		employee();
 	}
 
-	public static void postTimeAddition2(DayCardDbo[] dayCards)
-			throws Throwable {
+	public static void postTimeAddition2(DayCardDbo[] dayCards,
+			int[] noofhours, String[] details) throws Throwable {
 		UserDbo user = Utility.fetchUser();
 		CompanyDbo company = user.getCompany();
 		UserDbo manager = user.getManager();
 
 		TimeCardDbo timeCardDbo = new TimeCardDbo();
 		timeCardDbo.setBeginOfWeek(Utility.calculateBeginningOfTheWeek());
+		LocalDate beginOfWeek = Utility.calculateBeginningOfTheWeek();
 		int totalhours = 0;
-		for (DayCardDbo dayCard : dayCards) {
-			totalhours = totalhours+dayCard.getNumberOfHours();
+		for (int i = 0; i < 7; i++) {
+			DayCardDbo dayC = new DayCardDbo();
+			dayC.setDate(beginOfWeek.plusDays(i));
+			//validation.required(noofhours[i]);
+			if (noofhours[i] > 12) {
+				validation.addError("noofhours[i]",
+						"hours should be less than 24");
+			} else {
+				dayC.setNumberOfHours(noofhours[i]);
+				totalhours = totalhours + noofhours[i];
+				dayC.setDetail(details[i]);
+				timeCardDbo.addDayCard(dayC);
+				NoSql.em().put(dayC);
+			}
 		}
+		if (validation.hasErrors()) {
+			params.flash(); // add http parameters to the flash scope
+			validation.keep(); // keep the errors for the next request
+			addTime();
+		}
+		NoSql.em().flush();
+
 		timeCardDbo.setNumberOfHours(totalhours);
-		//timeCardDbo.setDetail(detail);
+		// timeCardDbo.setDetail(detail);
 		timeCardDbo.setApproved(false);
 		timeCardDbo.setStatus(StatusEnum.SUBMIT);
 		user.addTimecards(timeCardDbo);
 		NoSql.em().put(timeCardDbo);
 		NoSql.em().put(user);
-
 		NoSql.em().flush();
-
 		Utility.sendEmailForApproval(manager.getEmail(), company.getName(), user.getEmail());
 		employee();
 	}
 
+	
 	public static void userCards(String email) {
 		EmailToUserDbo ref = NoSql.em().find(EmailToUserDbo.class, email);
 		UserDbo user = NoSql.em().find(UserDbo.class, ref.getValue());

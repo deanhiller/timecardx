@@ -20,7 +20,7 @@ GET     /addtime								OtherStuff.addTime
 GET     /userdashboard							OtherStuff.employee
 GET     /managerdashboard						OtherStuff.manager
 GET     /usercards								OtherStuff.userCards
-
+ POST     /detailEmployee/{timeCard}	                    OtherStuff.detailEmployee 
 GET     /usersignup                        		Register.userRegister
 GET     /usersignup2/{token}                    Register.userRegister2
 

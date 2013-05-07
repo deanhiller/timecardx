@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 
 import com.alvazan.play.NoSql;
 
+import play.Play;
 import play.libs.Mail;
 import play.mvc.Scope.Session;
 import play.mvc.results.Unauthorized;
@@ -39,16 +40,24 @@ public class Utility {
 
 	public static void sendEmail(String emailId, String company,String key) {
 		SimpleEmail email = new SimpleEmail();
+		String mode = Play.configuration.getProperty("application.mode");
 		// TBD to change the URl
-		String signupUrl = "http://localhost:9000/usersignup2/" + key;
+		String signupUrl = "null";
+		if ("dev".equals(mode)) {
+			signupUrl = Play.configuration.getProperty("dev.signupUrl");
+
+		} else {
+			signupUrl = Play.configuration.getProperty("prod.signupUrl");
+
+		}
 		try {
 			email.setFrom("no-reply@tbd.com");
 			email.addTo(emailId);
 			email.setSubject("You are registered for " + company);
 			email.setMsg(" Hi,\n You have been added on www.tbd.com for "+ company + 
-					" to submit your time cards. \n Please go to "+ signupUrl + "  and complete the registration. \n Best Regards");
+					" to submit your time cards. \n Please go to "+ signupUrl +"usersignup2/"+key+"  and complete the registration. \n Best Regards");
 
-			//Mail.send(email); 
+			Mail.send(email); 
 		} catch (EmailException e) {
 			log.error("ERROR in sending mail to " + emailId);
 			e.printStackTrace();
@@ -81,7 +90,7 @@ public class Utility {
 			email.setMsg("The user " + employee + " who is registerdd for " + company + 
 					" has submitted his time card.\n Please log on to www.tbd.com and approve/reject the same. \n Best Regards");
 
-			//Mail.send(email); 
+			Mail.send(email); 
 		} catch (EmailException e) {
 			log.error("ERROR in sending mail to " + emailId);
 			e.printStackTrace();
@@ -91,10 +100,6 @@ public class Utility {
 	public static LocalDate calculateBeginningOfTheWeek() {
 		LocalDate time = LocalDate.now();
 		LocalDate beginOfWeek = time.dayOfWeek().withMinimumValue();
-/*		DateTime beginOfMonth = time.dayOfMonth().withMinimumValue();
-		Duration duration = new Duration(time, endOfMonth);
-		Duration monthDuration = new Duration(beginOfMonth, endOfMonth);*/
-		
 		return beginOfWeek;
 	}
 	

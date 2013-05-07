@@ -90,7 +90,6 @@
     </div>
 
 	#{ifErrors}
-	<div class="container">
 		<div class="row-fluid">
 			<div class="offset3 span6 alert alert-error">
 				<h4>Oops....</h4>
@@ -100,17 +99,17 @@
 				</ul>
 			</div>
 		</div>
-	</div>
-	#{/ifErrors} #{if flash.error}
-	<div class="container">
+	#{/ifErrors} 
+	#{if flash.error}
 		<div class="row-fluid">
 			<div class="offset3 span6 alert alert-error">
 				<h4>Oops....</h4>
 				${flash.error}
 			</div>
 		</div>
-	</div>
-	#{/} #{doLayout /}
+	#{/} 
+	
+	#{doLayout /}
 
 
 	<!-- starts footer -->

@@ -20,7 +20,7 @@
 				#{list timeCards, as:'timeCard'}
 	       		  <tr>
 	          		  <td>
-	       				${timeCard.beginOfWeek}
+	       			<a href="@{OtherStuff.detailEmployee(timeCard.id)}">${timeCard.beginOfWeek}</a>
 	      		      </td>
 			          <td>
 	            		${timeCard.numberOfHours}
@@ -33,9 +33,13 @@
 			</tbody>
 		</table>
 		</br>
-		<a href="/addtime"><span style="color: blue;">Add a new Time Card</span></a>
+		
+	#{if timeCard.beginOfWeek != beginOfWeek}
+       	<a href="/addtime"><span style="color: blue;">Add a new Time Card</span></a>
+      #{/if} 
+	#{else}
+	#{/else}
 	#{/else}
 	
-
 
 

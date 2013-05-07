@@ -53,4 +53,8 @@ public class DayCardDbo {
 		return detail;
 	}
 
+	public void setDetail(String detail) {
+		this.detail = detail;
+	}
+
 }

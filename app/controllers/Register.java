@@ -70,12 +70,19 @@ public class Register extends Controller {
 		long logintime = System.currentTimeMillis();
 		long duration = (7 * 24 * 60 * 60);
 		long interval = logintime - sendmailtime;
-		if (interval < duration) {
-			render(email);
+		validation.required(interval);
+		if (interval > duration) {
+			validation.addError("interval",
+					"Plese request the admin to send the message again");
+
 		} else {
+			render(email);
+		}
+		if (validation.hasErrors()) {
+			params.flash(); // add http parameters to the flash scope
+			validation.keep(); // keep the errors for the next request
 			Application.index();
 		}
-
 	}
 
 	// This for employees who has recieved the mail
