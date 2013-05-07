@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -16,7 +17,10 @@ import org.slf4j.LoggerFactory;
 
 import com.alvazan.play.NoSql;
 
+import models.DayCardDbo;
 import models.EmailToUserDbo;
+import models.StatusEnum;
+import models.Token;
 import models.UserDbo;
 import models.TimeCardDbo;
 import models.CompanyDbo;
@@ -44,8 +48,10 @@ public class OtherStuff extends Controller {
 			dashboard();
 		}
 		CompanyDbo company = user.getCompany();
-		log.info("User = " + user +" and Company = " + company); 
-		render(user, company);
+		log.info("User = " + user +" and Company = " + company);
+		List<UserDbo> employees = user.getEmployees();
+		List<TimeCardDbo> timeCards = user.getTimecards();
+		render(user, company, employees, timeCards);
 	}
 
 
@@ -151,7 +157,17 @@ public class OtherStuff extends Controller {
 
 		NoSql.em().flush();
 
-		Utility.sendEmail(useremail, company.getName());
+		String key = Utility.generateKey();
+		Token token = new Token();
+		long timestamp = System.currentTimeMillis();
+		token.setTime(timestamp);
+		token.setToken(key);
+		token.setEmail(useremail);
+		NoSql.em().put(token);
+		NoSql.em().flush();
+
+		Utility.sendEmail(useremail, company.getName(), key);
+
 		companyDetails();
 	}
 
@@ -178,11 +194,16 @@ public class OtherStuff extends Controller {
 
 	public static void addTime() {
 		UserDbo employee = Utility.fetchUser();
-		DateTime beginOfWeek = Utility.calculateBeginningOfTheWeek();
+		LocalDate beginOfWeek = Utility.calculateBeginningOfTheWeek();
 		DateTimeFormatter fmt = DateTimeFormat.forPattern("MMM dd");
 		String currentWeek = fmt.print(beginOfWeek);
-
-		render(currentWeek, employee);
+		DayCardDbo[] dayCards = new DayCardDbo[7];
+		for (int i=0; i<7 ; i++) {
+			dayCards[i] = new DayCardDbo();
+			dayCards[i].setDate(beginOfWeek.plusDays(i));
+			NoSql.em().put(dayCards[i]);
+		}
+		render(currentWeek, employee,beginOfWeek, dayCards);
 	}
 
 	public static void postTimeAddition(int totaltime, String detail)
@@ -204,7 +225,33 @@ public class OtherStuff extends Controller {
 		timeCardDbo.setNumberOfHours(totaltime);
 		timeCardDbo.setDetail(detail);
 		timeCardDbo.setApproved(false);
+		timeCardDbo.setStatus(StatusEnum.SUBMIT);
+		user.addTimecards(timeCardDbo);
+		NoSql.em().put(timeCardDbo);
+		NoSql.em().put(user);
 
+		NoSql.em().flush();
+
+		Utility.sendEmailForApproval(manager.getEmail(), company.getName(), user.getEmail());
+		employee();
+	}
+
+	public static void postTimeAddition2(DayCardDbo[] dayCards)
+			throws Throwable {
+		UserDbo user = Utility.fetchUser();
+		CompanyDbo company = user.getCompany();
+		UserDbo manager = user.getManager();
+
+		TimeCardDbo timeCardDbo = new TimeCardDbo();
+		timeCardDbo.setBeginOfWeek(Utility.calculateBeginningOfTheWeek());
+		int totalhours = 0;
+		for (DayCardDbo dayCard : dayCards) {
+			totalhours = totalhours+dayCard.getNumberOfHours();
+		}
+		timeCardDbo.setNumberOfHours(totalhours);
+		//timeCardDbo.setDetail(detail);
+		timeCardDbo.setApproved(false);
+		timeCardDbo.setStatus(StatusEnum.SUBMIT);
 		user.addTimecards(timeCardDbo);
 		NoSql.em().put(timeCardDbo);
 		NoSql.em().put(user);
@@ -220,6 +267,24 @@ public class OtherStuff extends Controller {
 		UserDbo user = NoSql.em().find(UserDbo.class, ref.getValue());
 		List<TimeCardDbo> timeCards = user.getTimecards();
 		render(email, timeCards);
+	}
+
+	public static void cardsAction(String timeCardId, int status) {
+
+		TimeCardDbo ref = NoSql.em().find(TimeCardDbo.class, timeCardId);
+		if (ref != null) {
+			if (status == 1) {
+				ref.setStatus(StatusEnum.APPROVED);
+				ref.setApproved(true);
+			} else {
+				ref.setStatus(StatusEnum.CANCELLED);
+				ref.setApproved(false);
+			}
+
+		}
+		NoSql.em().put(ref);
+		NoSql.em().flush();
+		manager();
 	}
 
 	public static void success() {

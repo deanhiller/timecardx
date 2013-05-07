@@ -1,6 +1,7 @@
 package controllers;
 
 import models.EmailToUserDbo;
+import models.Token;
 import models.UserDbo;
 
 import com.alvazan.play.NoSql;
@@ -10,7 +11,7 @@ import controllers.auth.Secure.Security;
 import play.mvc.Controller;
 
 public class Register extends Controller {
-
+	// This is for company admin
 	public static void postRegister(String email, String password,
 			String verifyPassword) throws Throwable {
 		validation.required(email);
@@ -62,6 +63,22 @@ public class Register extends Controller {
 		render();
 	}
 
+	public static void userRegister2(String token) {
+		Token tkn = NoSql.em().find(Token.class, token);
+		String email = tkn.getEmail();
+		long sendmailtime = tkn.getTime();
+		long logintime = System.currentTimeMillis();
+		long duration = (7 * 24 * 60 * 60);
+		long interval = logintime - sendmailtime;
+		if (interval < duration) {
+			render(email);
+		} else {
+			Application.index();
+		}
+
+	}
+
+	// This for employees who has recieved the mail
 	public static void postUserRegister(String email, String password, String verifyPassword, String firstName, String lastName, String phone) {
 		validation.required(email);
 		if (password == null) {

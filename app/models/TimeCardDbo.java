@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.joda.time.DateTime;
+import org.joda.time.LocalDate;
 import org.joda.time.LocalDateTime;
 import org.joda.time.format.DateTimeFormat;
 import org.joda.time.format.DateTimeFormatter;
@@ -23,35 +24,38 @@ public class TimeCardDbo {
 	@NoSqlId
 	private String id;
 
-	private DateTime beginOfWeek;
+	private LocalDate beginOfWeek;
 
 	private int numberOfHours;
 	
 	private String detail;
 	
 	private boolean approved;
+	
+	@NoSqlOneToMany
+	private List<DayCardDbo> daycards = new ArrayList<DayCardDbo>();
 
-//	private Status status;	
+	private String status;
 
 	public String getId() {
 		return id;
 	}
 
-	public void setId(DateTime beginOfWeek) {
+	public void setId(LocalDate beginOfWeek) {
 		this.beginOfWeek = beginOfWeek;
 	}
 
 	public String getRange() {
-		DateTime end = beginOfWeek.plusWeeks(1);
+		LocalDate end = beginOfWeek.plusWeeks(1);
 		end = end.minusDays(1);
 		return fmt.print(beginOfWeek) + " to " + fmt.print(end);
 	}
 
-	public DateTime getBeginOfWeek() {
+	public LocalDate getBeginOfWeek() {
 		return beginOfWeek;
 	}
 
-	public void setBeginOfWeek(DateTime beginOfWeek) {
+	public void setBeginOfWeek(LocalDate beginOfWeek) {
 		this.beginOfWeek = beginOfWeek;
 	}
 
@@ -79,11 +83,24 @@ public class TimeCardDbo {
 		this.approved = approved;
 	}
 
-	/*	public Status getStatus() {
-		return status;
+	public StatusEnum getStatus() {
+
+		return StatusEnum.mapForConversion.get(status);
 	}
 
-	public void setStatus(Status status) {
-		this.status = status;
-	}*/
+	public void setStatus(StatusEnum status) {
+		this.status = status.getDbValue();
+	}
+
+	public List<DayCardDbo> getDaycards() {
+		return daycards;
+	}
+
+	public void setDaycards(List<DayCardDbo> daycards) {
+		this.daycards = daycards;
+	}
+
+	public void addDayCard(DayCardDbo dayCard) {
+		this.daycards.add(dayCard);
+	}
 }

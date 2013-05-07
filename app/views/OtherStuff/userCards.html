@@ -8,7 +8,7 @@
        	<span style="color: blue;">There is no time card from this user</span>
     #{/ifnot}
     #{else}
-		<table class="table">
+		<table class="table table-hover">
 			<thead>
 			    <tr>
 		            <th>Week</th> 
@@ -19,30 +19,59 @@
 			    </tr>
 			</thead>
 			<tbody>
-				#{list timeCards, as:'timeCard'}
-	       		  <tr>
-	          		  <td>
-	       				${timeCard.beginOfWeek}
-	      		      </td>
-			          <td>
-	            		${timeCard.numberOfHours}
-			          </td>
-			          <td>
-						${timeCard.detail}
-			          </td>
-			          <td>
-			             #{if timeCard.approved}
-       						Approved
-    					 #{/if}
-  						 #{else}
-  						  Not Approved
-						 #{/else}
-			          </td>
-			          <td>
-						TBD
-			          </td>
-		          </tr>
-		        #{/list} 
+				<!-- #{form @OtherStuff.cardsAction()} -->
+					#{list timeCards, as:'timeCard'}
+		       		  <tr>
+		          		  <td>
+		       				${timeCard.beginOfWeek}
+		      		      </td>
+				          <td>
+		            		${timeCard.numberOfHours}
+				          </td>
+				          <td>
+							${timeCard.detail}
+				          </td>
+				          <td>
+				             #{if timeCard.approved}
+	       						Approved
+	    					 #{/if}
+	  						 #{else}
+	  						  Not Approved
+							 #{/else}
+				          </td>
+				          <td>	
+				          	 <div class="dropdown"> <a href="#" class="btn btn-primary dropdown-toggle login" id="action-drop" data-toggle="dropdown">Action</a>
+	            				<div class="dropdown-menu" role="menu" aria-labelledby="action-drop">              
+									   #{form @OtherStuff.cardsAction(), class:'form-inline'}
+						                <div>
+											<input type="hidden" name="timeCardId" value=${timeCard.id}></input>
+											#{select "status", class:'span2', value:1, id:'status'}
+												#{option 1}Approve #{/option}
+												#{option 2}Reject #{/option}
+											#{/select}	
+						                  <input class="btn btn-primary btn-small pull-right" value="Submit" type="submit"></input>
+						                </div>
+						               #{/form}
+	          					</div>
+				          </div>
+				          				                
+				          </td>
+			          </tr>
+			        #{/list}
+<!-- 			        <tr>
+		          		  <td>
+		      		      </td>
+				          <td>
+				          </td>
+				          <td>
+				          </td>
+				          <td>
+				          </td>
+				          <td>
+								<input type="submit" value="Submit"/>	                 					                
+				          </td>
+			          </tr> -->
+			 <!--    #{/form} -->
 			</tbody>
 		</table>
 	#{/else}

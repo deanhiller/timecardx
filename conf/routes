@@ -22,6 +22,7 @@ GET     /managerdashboard						OtherStuff.manager
 GET     /usercards								OtherStuff.userCards
 
 GET     /usersignup                        		Register.userRegister
+GET     /usersignup2/{token}                    Register.userRegister2
 
 
 # Ignore favicon requests

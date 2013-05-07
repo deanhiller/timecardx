@@ -1,9 +1,12 @@
 package controllers;
 
+import java.util.UUID;
+
 import org.apache.commons.mail.EmailException;
 import org.apache.commons.mail.SimpleEmail;
 import org.joda.time.DateTime;
 import org.joda.time.Duration;
+import org.joda.time.LocalDate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,16 +32,23 @@ public class Utility {
 		return user;
 	}
 
-	public static void sendEmail(String emailId, String company) {
+	public static String generateKey(){
+		UUID token = UUID.randomUUID();
+		return(token.toString());
+	}
+
+	public static void sendEmail(String emailId, String company,String key) {
 		SimpleEmail email = new SimpleEmail();
+		// TBD to change the URl
+		String signupUrl = "http://localhost:9000/usersignup2/" + key;
 		try {
 			email.setFrom("no-reply@tbd.com");
 			email.addTo(emailId);
 			email.setSubject("You are registered for " + company);
 			email.setMsg(" Hi,\n You have been added on www.tbd.com for "+ company + 
-					" to submit your time cards. \n Please go to www.tbd.com and complete the registration. \n Best Regards");
+					" to submit your time cards. \n Please go to "+ signupUrl + "  and complete the registration. \n Best Regards");
 
-			Mail.send(email); 
+			//Mail.send(email); 
 		} catch (EmailException e) {
 			log.error("ERROR in sending mail to " + emailId);
 			e.printStackTrace();
@@ -71,16 +81,16 @@ public class Utility {
 			email.setMsg("The user " + employee + " who is registerdd for " + company + 
 					" has submitted his time card.\n Please log on to www.tbd.com and approve/reject the same. \n Best Regards");
 
-			Mail.send(email); 
+			//Mail.send(email); 
 		} catch (EmailException e) {
 			log.error("ERROR in sending mail to " + emailId);
 			e.printStackTrace();
 		}
 	}
 
-	public static DateTime calculateBeginningOfTheWeek() {
-		DateTime time = DateTime.now();
-		DateTime beginOfWeek = time.dayOfWeek().withMinimumValue();
+	public static LocalDate calculateBeginningOfTheWeek() {
+		LocalDate time = LocalDate.now();
+		LocalDate beginOfWeek = time.dayOfWeek().withMinimumValue();
 /*		DateTime beginOfMonth = time.dayOfMonth().withMinimumValue();
 		Duration duration = new Duration(time, endOfMonth);
 		Duration monthDuration = new Duration(beginOfMonth, endOfMonth);*/
