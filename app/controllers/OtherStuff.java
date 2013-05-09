@@ -177,15 +177,31 @@ public class OtherStuff extends Controller {
 			// so render his timecards only
 			LocalDate beginOfWeek = Utility.calculateBeginningOfTheWeek();
 			List<TimeCardDbo> timeCards = employee.getTimecards();
+			//StatusEnum status = timeCards.getStatus();
 			render(timeCards,beginOfWeek);
 		} else {
 			manager();
 		}
 	}
+
 	public static void detailEmployee(String id) {
-		TimeCardDbo ref = NoSql.em().find(TimeCardDbo.class, id);
-		List<DayCardDbo> dayCardDbo=ref.getDaycards();
-		render(dayCardDbo);
+		TimeCardDbo timeCard = NoSql.em().find(TimeCardDbo.class, id);
+		StatusEnum status = timeCard.getStatus();
+		boolean readOnly;
+		if (status == StatusEnum.APPROVED)
+			readOnly = true;
+		else
+			readOnly = false;
+		List<DayCardDbo> dayCardDbo = timeCard.getDaycards();
+		int[] noofhours = new int[7];
+		String[] details = new String[7];
+		int i = 0;
+		for (DayCardDbo dayCard : dayCardDbo) {
+			noofhours[i] = dayCard.getNumberOfHours();
+			details[i] = dayCard.getDetail();
+			i++;
+		}
+		render(timeCard, dayCardDbo, noofhours, details, readOnly);
 	}
 
 	public static void manager() {
@@ -204,17 +220,13 @@ public class OtherStuff extends Controller {
 		DayCardDbo[] dayCards = new DayCardDbo[7];
 		int[] noofhours = new int[7];
 		String[] details = new String[7];
-		for (int i=0; i<7 ; i++) {
+		for (int i = 0; i < 7; i++) {
 			noofhours[i] = 0;
-			details[i]= "";
+			details[i] = "";
 			dayCards[i] = new DayCardDbo();
 			dayCards[i].setDate(beginOfWeek.plusDays(i));
-			dayCards[i].setNumberOfHours(i);
-			dayCards[i].setDetail("i");
-			NoSql.em().put(dayCards[i]);
-		    NoSql.em().flush();
 		}
-		render(currentWeek, employee,beginOfWeek, dayCards, noofhours, details);
+		render(currentWeek, employee, beginOfWeek, dayCards, noofhours, details);
 	}
 
 	public static void postTimeAddition(int totaltime, String detail)
@@ -247,8 +259,7 @@ public class OtherStuff extends Controller {
 		employee();
 	}
 
-	public static void postTimeAddition2(DayCardDbo[] dayCards,
-			int[] noofhours, String[] details) throws Throwable {
+	public static void postTimeAddition2(int[] noofhours, String[] details) throws Throwable {
 		UserDbo user = Utility.fetchUser();
 		CompanyDbo company = user.getCompany();
 		UserDbo manager = user.getManager();
@@ -260,10 +271,10 @@ public class OtherStuff extends Controller {
 		for (int i = 0; i < 7; i++) {
 			DayCardDbo dayC = new DayCardDbo();
 			dayC.setDate(beginOfWeek.plusDays(i));
-			//validation.required(noofhours[i]);
+		//validation.required(noofhours[i]);
 			if (noofhours[i] > 12) {
 				validation.addError("noofhours[i]",
-						"hours should be less than 24");
+						"hours should be less than 12");
 			} else {
 				dayC.setNumberOfHours(noofhours[i]);
 				totalhours = totalhours + noofhours[i];
@@ -290,8 +301,46 @@ public class OtherStuff extends Controller {
 		Utility.sendEmailForApproval(manager.getEmail(), company.getName(), user.getEmail());
 		employee();
 	}
-
 	
+	
+	public static void updateTimeAddition(String timeCardId,
+			String[] dayCardsid, int[] noofhours, String[] details) {
+		TimeCardDbo timeCard = NoSql.em().find(TimeCardDbo.class, timeCardId);
+		int sum = 0;
+		for (int i = 0; i < 7; i++) {
+			DayCardDbo dayC = NoSql.em().find(DayCardDbo.class, dayCardsid[i]);
+			if (noofhours[i] > 12) {
+				validation.addError("noofhours[i]",
+						"hours should be less than 12");
+			} else {
+				dayC.setNumberOfHours(noofhours[i]);
+				dayC.setDetail(details[i]);
+				NoSql.em().put(dayC);
+
+				sum += noofhours[i];
+			}
+			if (validation.hasErrors()) {
+				params.flash(); // add http parameters to the flash scope
+				validation.keep(); // keep the errors for the next request
+				addTime();
+			}
+
+		}
+		timeCard.setNumberOfHours(sum);
+		timeCard.setStatus(StatusEnum.SUBMIT);
+		NoSql.em().put(timeCard);
+		NoSql.em().flush();
+		employee();
+
+	}
+
+	public static void detail(String id) {
+		TimeCardDbo timeCard = NoSql.em().find(TimeCardDbo.class, id);
+		List<DayCardDbo> dayCardDbo = timeCard.getDaycards();
+		StatusEnum status = timeCard.getStatus();
+		render(dayCardDbo, timeCard, status);
+	}
+
 	public static void userCards(String email) {
 		EmailToUserDbo ref = NoSql.em().find(EmailToUserDbo.class, email);
 		UserDbo user = NoSql.em().find(UserDbo.class, ref.getValue());
