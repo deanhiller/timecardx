@@ -1,7 +1,7 @@
 #{extends './userTemplate.html' /}
 
 <div class="container">
-<h2></h2>
+<h3>My Company</h3>
 </div>
 
     #{if company == null}
@@ -34,7 +34,7 @@
 	#{/else}
 
 <div class="container">
-<h2>My team</h2>
+<h3>My Team</h3>
 </div>
     #{ifnot employees}
        	<span style="color: blue;"> There is no member in your team</span>
@@ -67,7 +67,7 @@
 	#{/else}
 
 <div class="container">
-<h2>Time Cards</h2>
+<h3>Time Cards</h3>
 </div>
     #{ifnot timeCards}
        	<a href="/addtime"><span style="color: blue;">Add a new Time Card</span></a>

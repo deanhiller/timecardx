@@ -1,7 +1,8 @@
 #{extends './userTemplate.html' /}
 
 <div class="container">
-<h2></h2>
+<h4>Time cards of ${email}</h4>
+</br>
 </div>
 
     #{ifnot timeCards}
@@ -14,19 +15,28 @@
 		            <th>Week</th> 
 		            <th>No. of Hours</th>
 		            <th>Status</th>
-			    </tr>
+		            <th>Action</th>
 			</thead>
 			<tbody>
 				#{list timeCards, as:'timeCard'}
 	       		  <tr>
 	          		  <td>
-	       			<a href="@{OtherStuff.detailEmployee(timeCard.id)}">${timeCard.beginOfWeek}</a>
+	       			  ${timeCard.beginOfWeek}
 	      		      </td>
+	      		      
 			          <td>
 	            		${timeCard.numberOfHours}
 			          </td>
 			          <td>
-						${timeCard.status}
+					 #{if timeCard.status == models.StatusEnum.APPROVED}  <button class="btn btn-success btn-mini disabled"><i class="fam-accept"></i>${timeCard.status} </button>  #{/if}
+					 #{if timeCard.status == models.StatusEnum.CANCELLED} <button class="btn btn-danger btn-mini disabled"><i class="fam-accept"></i>${timeCard.status} </button>#{/if}
+						 #{if timeCard.status == models.StatusEnum.SUBMIT}<button class="btn btn-primary btn-mini disabled"><i class="fam-accept"></i>${timeCard.status} </button> #{/if}	
+			          </td>
+			          
+			             <td>
+			       #{if timeCard.status == models.StatusEnum.APPROVED}  <a href="@{OtherStuff.detailEmployee(timeCard.id)}"> view </a>#{/if}
+			       #{if timeCard.status == models.StatusEnum.CANCELLED} <a href="@{OtherStuff.detailEmployee(timeCard.id)}"> view and submit</a>#{/if}
+			      #{if timeCard.status == models.StatusEnum.SUBMIT}  <a href="@{OtherStuff.detailEmployee(timeCard.id)}"> view and edit</a>#{/if}
 			          </td>
 		          </tr>
 		        #{/list} 

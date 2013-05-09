@@ -172,13 +172,13 @@ public class OtherStuff extends Controller {
 	public static void employee() {
 		UserDbo employee = Utility.fetchUser();
 		List<UserDbo> employees = employee.getEmployees();
+		String email=employee.getEmail();
 		if (employees != null && employees.size() == 0) {
 			// Employee is either only employee or a manager with no employee under him
 			// so render his timecards only
 			LocalDate beginOfWeek = Utility.calculateBeginningOfTheWeek();
 			List<TimeCardDbo> timeCards = employee.getTimecards();
-			//StatusEnum status = timeCards.getStatus();
-			render(timeCards,beginOfWeek);
+			render(timeCards,beginOfWeek,email);
 		} else {
 			manager();
 		}
@@ -201,7 +201,7 @@ public class OtherStuff extends Controller {
 			details[i] = dayCard.getDetail();
 			i++;
 		}
-		render(timeCard, dayCardDbo, noofhours, details, readOnly);
+		render(timeCard, dayCardDbo, noofhours, details, readOnly, status);
 	}
 
 	public static void manager() {
