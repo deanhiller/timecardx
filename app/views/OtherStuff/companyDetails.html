@@ -12,14 +12,21 @@
 			<th>User Name</th>
 			<th>Email Id</th>
 			<th>Manager</th>
+			<th>Change Manager</th>
 		</tr>
 	</thead>
 	<tbody>
 		#{list users, as:'companyuser'}
 		<tr>
-			<td>${companyuser.firstName} ${companyuser.lastName}</td>
-			<td>${companyuser.email}</td>		
-			<td>${companyuser.manager.email}</td>
+			<td> ${companyuser.firstName} ${companyuser.lastName}</td>
+			
+			#{form @OtherStuff.rename()}
+			<td> <input type="text" name="useremail" value="${companyuser.email}" />	</td>
+			<td><input type="text" name="firstmanager" value="${companyuser.manager.email}" /></td>
+			<td>#{select 'manager', items:users, valueProperty:'email', labelProperty:'email' /}
+			 </td>
+			 <td><input type="submit" value="rename"/> </td>
+			 #{/form}
 		</tr>
 		#{/list}
 	</tbody>

@@ -169,6 +169,31 @@ public class OtherStuff extends Controller {
 		companyDetails();
 	}
 
+	public static void rename(String useremail,String firstmanager,String manager){
+
+		EmailToUserDbo oldManagerRef = NoSql.em().find(EmailToUserDbo.class, firstmanager);
+		UserDbo oldManager = NoSql.em().find(UserDbo.class, oldManagerRef.getValue());
+
+		EmailToUserDbo newManagerRef = NoSql.em().find(EmailToUserDbo.class, manager);
+		UserDbo newManager = NoSql.em().find(UserDbo.class, newManagerRef.getValue());
+
+		EmailToUserDbo empRef = NoSql.em().find(EmailToUserDbo.class, useremail);
+		UserDbo emp = NoSql.em().find(UserDbo.class, empRef.getValue());
+
+		emp.setManager(newManager);
+		NoSql.em().put(emp);
+
+		newManager.addEmployee(emp);
+		NoSql.em().put(newManager);
+
+		oldManager.deleteEmployee(emp);
+		NoSql.em().put(oldManager);
+
+		NoSql.em().flush();
+
+		dashboard();
+	}
+
 	public static void employee() {
 		UserDbo employee = Utility.fetchUser();
 		List<UserDbo> employees = employee.getEmployees();
@@ -211,6 +236,7 @@ public class OtherStuff extends Controller {
 		List<TimeCardDbo> timeCards = manager.getTimecards();
 		render(employees, timeCards);
 	}
+	
 
 	public static void addTime() {
 		UserDbo employee = Utility.fetchUser();

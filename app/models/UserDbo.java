@@ -117,6 +117,10 @@ public class UserDbo {
 		this.employees.add(employee);
 	}
 
+	public void deleteEmployee(UserDbo employee) {
+		this.employees.remove(employee);
+	}
+
 	public List<TimeCardDbo> getTimecards() {
 		return timecards;
 	}
